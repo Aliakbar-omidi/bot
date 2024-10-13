@@ -27,6 +27,7 @@ def message_all(message):
         bot.reply_to(message, 'لطفاً فقط فارسی تایپ کنید.')
 
 
-# Handles all message for wich the lambda returns True
-
-bot.polling()
+try:
+    bot.polling(none_stop=True)
+except Exception as e:
+    print(f"An error occurred: {e}")
