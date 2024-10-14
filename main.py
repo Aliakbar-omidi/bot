@@ -4,8 +4,13 @@ from config import API_token
 
 bot = telebot.TeleBot(API_token)
 
+
+User_id = []
+
 @bot.message_handler(commands=['start'])
 def start_message(message):
+    if message.chat.id not in User_id:
+        User_id.append(message.chat.id)
     bot.reply_to(message, " سلام لطفا اسم خودت رو بهم بگو ")
     bot.register_next_step_handler(message, process_name)
 
@@ -18,6 +23,14 @@ def process_name(message):
 def process_age(message):
     age = message.text
     bot.send_message(message.chat.id, f"پس {age} سالته \n خیلی ام عالی.")
+
+
+# send message for update products
+@bot.message_handler(commands=['SUP2024'])
+def send_update(message):
+    for id in User_id:
+        bot.send_message(id, "محصول مورد نظر موجود شد")
+
 
 # Handles all sent documents, audio files, and voice messages
 @bot.message_handler(content_types=['audio','document','voice'])
@@ -41,4 +54,3 @@ try:
     bot.polling(none_stop=True)
 except Exception as e:
     print(f"An error occurred: {e}")
-    
