@@ -1,13 +1,23 @@
-
 import telebot
 import re
+from config import API_token
 
-bot = telebot.TeleBot('7392506579:AAGNVj-Qfw-by0_uM3sz4SOiCJ3GpBHEfRo')
+bot = telebot.TeleBot(API_token)
 
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
-    bot.reply_to(message, " سلام به ربات دانلودر فیلم خوش اومدی ")
+def start_message(message):
+    bot.reply_to(message, " سلام لطفا اسم خودت رو بهم بگو ")
+    bot.register_next_step_handler(message, process_name)
 
+def process_name(message):
+    name = message.text
+    bot.send_message(message.chat.id, f"خب {name} حالا به من بگو که چند سالته؟")
+
+    bot.register_next_step_handler(message, process_age)
+
+def process_age(message):
+    age = message.text
+    bot.send_message(message.chat.id, f"پس {age} سالته \n خیلی ام عالی.")
 
 # Handles all sent documents, audio files, and voice messages
 @bot.message_handler(content_types=['audio','document','voice'])
