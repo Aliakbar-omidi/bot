@@ -19,15 +19,13 @@ def check_button(call):
     elif call.data == "btn2":
         bot.answer_callback_query(call.id, "09193232",show_alert=True)
 
-
-
 @bot.message_handler(commands=['call'])
 def message_help(message):
     bot.send_message(message.chat.id, "برای برقراری ارتباط دکمه های زیر رو بزن", 
         reply_markup=inline_keyboard)
 
 
-
+# start command
 User_id = []
 @bot.message_handler(commands=['start'])
 def start_message(message):
