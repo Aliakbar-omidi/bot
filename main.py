@@ -1,17 +1,39 @@
 import telebot
 import re
 from config import API_token
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 bot = telebot.TeleBot(API_token)
 
 
-User_id = []
+# adding button
+button2 = InlineKeyboardButton(text="تماس با مدیر", callback_data="btn1")
+button3 = InlineKeyboardButton(text="تماس با پشتیبانی", callback_data="btn2")
+inline_keyboard = InlineKeyboardMarkup(row_width=1)
+inline_keyboard.add(button2, button3)
 
+@bot.callback_query_handler(func=lambda call:True)
+def check_button(call):
+    if call.data == "btn1":
+        bot.answer_callback_query(call.id, "09121212",show_alert=True)
+    elif call.data == "btn2":
+        bot.answer_callback_query(call.id, "09193232",show_alert=True)
+
+
+
+@bot.message_handler(commands=['call'])
+def message_help(message):
+    bot.send_message(message.chat.id, "برای برقراری ارتباط دکمه های زیر رو بزن", 
+        reply_markup=inline_keyboard)
+
+
+
+User_id = []
 @bot.message_handler(commands=['start'])
 def start_message(message):
     if message.chat.id not in User_id:
         User_id.append(message.chat.id)
-    bot.reply_to(message, " سلام لطفا اسم خودت رو بهم بگو ")
+    bot.send_message(message.chat.id, " سلام لطفا اسم خودت رو بهم بگو ")
     bot.register_next_step_handler(message, process_name)
 
 def process_name(message):
@@ -54,3 +76,4 @@ try:
     bot.polling(none_stop=True)
 except Exception as e:
     print(f"An error occurred: {e}")
+
