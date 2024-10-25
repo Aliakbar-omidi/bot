@@ -2,8 +2,11 @@ import telebot
 import re
 from config import *
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
+from telebot import types
+
 
 bot = telebot.TeleBot(API_token)
+
 
 
 # start command
@@ -29,12 +32,29 @@ def process_age(message):
     age = message.text
     bot.send_message(message.chat.id, f"پس {age} سالته \n خیلی ام عالی.")
 
+#################### End of command #############################
 
-# send message for update products
-@bot.message_handler(commands=['SUP2024'])
-def send_update(message):
-    for id in User_id:
-        bot.send_message(id, "محصول مورد نظر موجود شد")
+
+# Creating the reply keyboard (criticism command)
+reply_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
+reply_keyboard.add("btn1", "btn2", "close")
+
+@bot.message_handler(commands=['criticism'])
+def check_criticism(message):
+    bot.reply_to(message, "Check the following keyboard.", reply_markup=reply_keyboard)
+
+@bot.message_handler(func=lambda message: True)
+def check_reply_button(message):
+    if message.text == "btn1":
+        bot.reply_to(message, "button1 is pressed")
+    elif message.text == "btn2":
+        bot.reply_to(message, "button2 is pressed")
+    elif message.text == "close":
+        bot.send_message(message.chat.id, "دستور بسته شد.", reply_markup=types.ReplyKeyboardRemove())
+    elif re.match(r"^[A-za-zآ-ی0-9]+$", message.text):
+        bot.reply_to(message, f"your message is {message.text}")
+
+#################### End of command #############################
 
 
 # Handles all sent documents, audio files, and voice messages
@@ -47,6 +67,8 @@ def message_for_file(message):
     elif message.voice:
         bot.reply_to(message, 'This is voice')
 
+#################### End of command #############################
+
 
 # Handles all text message that match the regular expression
 @bot.message_handler(func=lambda message: True)
@@ -54,8 +76,10 @@ def message_all(message):
     if re.match(r"^[A-Za-z]+$", message.text):
         bot.reply_to(message, 'لطفاً فقط فارسی تایپ کنید.')
 
+#################### End of command #############################
 
-# adding button for inlinekeyboard
+
+# adding button for inlinekeyboard (call command)
 button2 = InlineKeyboardButton(text="تماس با مدیر", callback_data="btn1")
 button3 = InlineKeyboardButton(text="تماس با پشتیبانی", callback_data="btn2")
 inline_keyboard = InlineKeyboardMarkup(row_width=1)
@@ -74,25 +98,16 @@ def check_button(call):
 def message_help(message):
     bot.send_message(message.chat.id, "برای برقراری ارتباط دکمه های زیر رو بزن", reply_markup=inline_keyboard)
 
+#################### End of command #############################
 
 
-# Creating the reply keyboard
-reply_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
-reply_keyboard.add("btn1", "btn2")
+# send message for update products
+@bot.message_handler(commands=['SUP2024'])
+def send_update(message):
+    for id in User_id:
+        bot.send_message(id, "محصول مورد نظر موجود شد")
 
-@bot.message_handler(commands=['criticism'])
-def check_criticism(message):
-    print("eewewe")
-    bot.reply_to(message, "Check the following keyboard.", reply_markup=reply_keyboard)
-
-@bot.message_handler(func=lambda message:True)
-def check_reply_button(message):
-    if message.text == "btn1":
-        bot.reply_to(message, "button1 is pressed")
-    elif message.text == "btn2":
-        bot.reply_to(message, "button2 is pressed")
-    else:
-        bot.reply_to(message, f"your message is {message.text}")
+#################### End of command #############################
 
 
 try:
